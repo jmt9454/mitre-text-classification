@@ -19,11 +19,11 @@ cursor = db.cursor()
 ### ENSURE mitre_desc TABLE EXISTS
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS mitre_technique_references (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
     source_name TEXT,
     url TEXT,
     attack_pattern TEXT,
-    technique_id TEXT
+    technique_id TEXT,
+    PRIMARY KEY (attack_pattern, url)
 )
 """)
 db.commit()
@@ -36,9 +36,9 @@ for tech in techniques:
     technique_id = [ref["external_id"] for ref in tech["external_references"]
                     if ref.get("source_name") == "mitre-attack"][0]
     for ref in tech["external_references"]:
-        if ref.get("source_name") != "mitre-attack":
+        if ref.get("source_name") != "mitre-attack" and ref.get("url") is not None:
             cursor.execute(
-                "INSERT INTO mitre_technique_references (source_name, url, attack_pattern, technique_id) VALUES (?,?,?,?)",
+                "INSERT OR IGNORE INTO mitre_technique_references (source_name, url, attack_pattern, technique_id) VALUES (?,?,?,?)",
                 (ref.get("source_name"), ref.get("url"), attack_pattern_id, technique_id)
             )
     db.commit()
