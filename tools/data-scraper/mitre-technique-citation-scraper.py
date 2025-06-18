@@ -28,7 +28,6 @@ CREATE TABLE IF NOT EXISTS mitre_technique_references (
 """)
 db.commit()
 
-#TODO: enumerate stix2 attack-patterns with references
 # Query for attack patterns and insert into the database
 techniques = store.query([ Filter("type", "=", "attack-pattern") ])
 for tech in techniques:
