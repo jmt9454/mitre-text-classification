@@ -42,7 +42,7 @@ def generate_prompt(technique_id, name, desc):
     return f"Generate a synthetic data news article paragraph about a scenario pertaining to the MITRE ATT&CK technique with ID {repr(technique_id).replace("\\","\\\\").replace('"','\\\"')}, named '{repr(name).replace("\\","\\\\").replace('"','\\\"')}', which is described as: {repr(desc).replace("\\","\\\\").replace('"','\\\"')}. Use non-technical language The sample should be realistic and relevant to the technique. Do not highlight that this is a synthetic data sample or that the scenario is hypothetical. Do not reference MITRE ATT&CK or any specific cybersecurity terms directly."
 
 def generate_batch_input(technique_id, name, desc, system_message, iteration=1):
-    return '{"custom_id": "'+technique_id+'_iteration_'+str(iteration)+'", "method": "POST", "url": "/v1/chat/completions", "body": {"model": "gpt-4.1-nano", "messages": [{"role": "system", "content": "'+system_message+'"},{"role": "user", "content": "'+generate_prompt(technique_id, name, desc)+'"}],"max_tokens": 128, "temperature": 1.2}}'
+    return '{"custom_id": "'+technique_id+'_'+name+'_iteration_'+str(iteration)+'", "method": "POST", "url": "/v1/chat/completions", "body": {"model": "gpt-4.1-nano", "messages": [{"role": "system", "content": "'+system_message+'"},{"role": "user", "content": "'+generate_prompt(technique_id, name, desc)+'"}],"max_tokens": 256, "temperature": 1.2}}'
 
 def main():
     techniques_to_process = get_technique_data(DATABASE_FILE, TABLE_NAME) 
