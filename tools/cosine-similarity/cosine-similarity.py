@@ -13,7 +13,7 @@ def load_mitre_techniques(db_file):
     """
     db = sqlite3.connect(db_file)
     cursor = db.cursor()
-    cursor.execute('SELECT technique_id, name, description FROM mitre_desc')
+    cursor.execute('SELECT technique_id, name, description FROM mitre_technique_descriptions')
     data = cursor.fetchall()
     db.close()
     return pd.DataFrame(data, columns=['technique_id', 'name', 'description'])
@@ -64,7 +64,7 @@ def calculate_cosine_similarity(embeddings1, embeddings2):
         return pd.DataFrame(columns=['technique_id', 'name', 'similarity'])
     
     similarities = cosine_similarity(embeddings1, embeddings2)
-    return pd.DataFrame(similarities, columns=embeddings2.index, index=embeddings1.index)
+    return pd.DataFrame(similarities)
 
 def main():
     # Load data
@@ -76,8 +76,8 @@ def main():
 
     # Encode techniques and synthetic texts
     # Remove save_to_file parameter and replace with load_from_file if you've already saved embeddings
-    technique_embeddings = encode_texts(model, techniques_df['description'].tolist(), save_to_file='technique_embeddings.npy')
-    synthetic_embeddings = encode_texts(model, synthetic_texts_df['text'].tolist(), save_to_file='synthetic_embeddings.npy')
+    technique_embeddings = encode_texts(model, techniques_df['description'].tolist(), load_from_file='technique_embeddings.npy')
+    synthetic_embeddings = encode_texts(model, synthetic_texts_df['text'].tolist(), load_from_file='synthetic_embeddings.npy')
 
     # Calculate cosine similarity
     similarity_df = calculate_cosine_similarity(technique_embeddings, synthetic_embeddings)
