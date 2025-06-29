@@ -14,7 +14,7 @@ client = openai.OpenAI()
 
 DATABASE_FILE = 'data\\sqlite3\\mitre_data.db'  # Replace with your SQLite database file name
 TABLE_NAME = 'mitre_technique_descriptions'
-SYSTEM_MESSAGE = "You are a synthetic data generator that creates realistic reports based on cybersecurity techniques. Your task is to generate an internal company report that describes a scenario related to a specific MITRE ATT&CK technique. The report should be informative, engaging, and relevant to the technique's context. You use technical language to ensure the conversation is clear for an audience with cybersecurity expertise. The sample should be realistic and relevant to the technique. Do not highlight that this is a synthetic data sample or that the scenario is hypothetical. Do not reference MITRE ATT&CK or any specific cybersecurity terms directly."
+SYSTEM_MESSAGE = "You are a synthetic data generator that creates realistic reports based on cybersecurity techniques. Your task is to generate an internal company report that describes a scenario related to a specific MITRE ATT&CK technique. The report should be informative, engaging, and relevant to the technique's context. You use semi-technical language to ensure the report is accessible to an audience with cybersecurity awareness but not expertise. The sample should be realistic and relevant to the technique. Do not highlight that this is a synthetic data sample or that the scenario is hypothetical. Do not reference MITRE ATT&CK or any specific cybersecurity terms directly."
 
 def get_technique_data(db_file, table_name, technique_name=None):
     """
@@ -39,7 +39,7 @@ def get_technique_data(db_file, table_name, technique_name=None):
             db.close()
 
 def generate_prompt(technique_id, name, desc):
-    return f"Generate a synthetic company report paragraph about a scenario pertaining to the MITRE ATT&CK technique with ID {repr(technique_id).replace("\\","\\\\").replace('"','\\\"')}, named '{repr(name).replace("\\","\\\\").replace('"','\\\"')}', which is described as: {repr(desc).replace("\\","\\\\").replace('"','\\\"')}. Use technical language. The sample should be realistic and relevant to the technique. Do not highlight that this is a synthetic data sample or that the scenario is hypothetical. Do not reference MITRE ATT&CK or any specific cybersecurity terms directly."
+    return f"Generate a synthetic internal report paragraph about a scenario pertaining to the MITRE ATT&CK technique with ID {repr(technique_id).replace("\\","\\\\").replace('"','\\\"')}, named '{repr(name).replace("\\","\\\\").replace('"','\\\"')}', which is described as: {repr(desc).replace("\\","\\\\").replace('"','\\\"')}. Use semi-technical language. The sample should be realistic and relevant to the technique. Do not highlight that this is a synthetic data sample or that the scenario is hypothetical. Do not reference MITRE ATT&CK or any specific cybersecurity terms directly."
 
 def generate_batch_input(technique_id, name, desc, system_message, iteration=1):
     return '{"custom_id": "prod_'+technique_id+'_'+name+'_iteration_'+str(iteration)+'", "method": "POST", "url": "/v1/chat/completions", "body": {"model": "gpt-4.1-nano", "messages": [{"role": "system", "content": "'+system_message+'"},{"role": "user", "content": "'+generate_prompt(technique_id, name, desc)+'"}],"max_tokens": 256, "temperature": 1.2}}'
@@ -62,7 +62,7 @@ def main():
         endpoint="/v1/chat/completions",
         completion_window="24h",
         metadata={
-            "description": "prod"
+            "description": "prod_common_speech"
         }
     )
 
